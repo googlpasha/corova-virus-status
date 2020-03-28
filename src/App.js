@@ -16,6 +16,10 @@ class CountryCard extends React.Component {
           </div>
           <span>Infected now:</span>
           <h1 className="countryCard__title">{this.props.api[i].cases.active}</h1>
+          <ul className="countryCard__infoList">
+            <li className="countryCard__infoList__item">Total infected: {this.props.api[i].cases.total}</li>
+            <li className="countryCard__infoList__item">Deaths: {this.props.api[i].deaths.total}</li>
+          </ul>
         </div>
       </div>
       )
