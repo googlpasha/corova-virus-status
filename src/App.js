@@ -9,7 +9,7 @@ class Settings extends React.Component {
     <div className="row">
       <div className="col-lg-4">
         <div className="dropdown">
-          <DropdownButton id="dropdown-basic-button" title="Dropdown button">
+          <DropdownButton id="dropdown-basic-button" variant="secondary" title={this.props.sortBy}>
             <Dropdown.Item href="#" onClick={()=>this.props.sortArray("active")}>Active</Dropdown.Item>
             <Dropdown.Item href="#" onClick={()=>this.props.sortArray("critical")}>Critical</Dropdown.Item>
             <Dropdown.Item href="#" onClick={()=>this.props.sortArray("recovered")}>Recovered</Dropdown.Item>
@@ -19,7 +19,17 @@ class Settings extends React.Component {
         </div>
       </div>
       <div className="col-lg-4"></div>
-      <div className="col-lg-4"></div>
+      <div className="col-lg-4">
+      <div className="dropdown">
+          <DropdownButton id="dropdown-basic-button" variant="secondary" title={this.props.showCountries}>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(3)}>3</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(6)}>6</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(9)}>9</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(12)}>12</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(15)}>15</Dropdown.Item>
+          </DropdownButton>
+        </div>
+      </div>
     </div>
     )
   }
@@ -29,10 +39,14 @@ class CountryCard extends React.Component {
   render(){
     var items = []
     const { getCode } = require('country-list');
-    for (let i = 0; i < this.props.api.slice(-3).length; i++) {
+    const showCountriesAmmount = -this.props.showCountries
+    for (let i = 0; i < this.props.api.slice(showCountriesAmmount).length; i++) {
       var countryCode = getCode(this.props.api[i].country);
       if(countryCode === undefined){
         countryCode = this.props.api[i].country.slice(0,2).toUpperCase()
+      }
+      if(countryCode === "UK"){
+        countryCode = "GB"
       }
       items.push(
       <div className="col-lg-4">
@@ -72,9 +86,12 @@ class App extends React.Component {
   constructor(){
     super()
     this.state = {
-      api : []
+      api : [],
+      sortBy: "Active",
+      showCountries: 3
     }
     this.sortArray = this.sortArray.bind(this)
+    this.changeCountriesAmmount = this.changeCountriesAmmount.bind(this)
   }
   async componentDidMount(){
     try{
@@ -96,6 +113,7 @@ class App extends React.Component {
     }
     this.sortArray('active')
   }
+
 
   sortArray(param){
     console.log(param)
@@ -142,9 +160,17 @@ class App extends React.Component {
     }
 
     this.setState({
-      api : sortable
+      api : sortable,
+      sortBy: param
     })
   }
+
+  changeCountriesAmmount(ammount){
+    this.setState({
+      showCountries : ammount
+    })
+  }
+
   render(){
     return (
       <div className="App">
@@ -155,8 +181,8 @@ class App extends React.Component {
             <div className="col-lg-4"><h1>COVID-19 STATUS</h1></div>
             <div className="col-lg-4"></div>
           </div>
-            <Settings sortArray={this.sortArray}/>
-            <CountryCard api={this.state.api} />
+            <Settings sortArray={this.sortArray} sortBy={this.state.sortBy} changeCountriesAmmount={this.changeCountriesAmmount} showCountries={this.state.showCountries} />
+            <CountryCard api={this.state.api} showCountries={this.state.showCountries} />
           </div>
         </header>
       </div>
