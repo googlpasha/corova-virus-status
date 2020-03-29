@@ -1,12 +1,39 @@
 import React from 'react';
 import './App.css';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
+
+
+class Settings extends React.Component {
+  render(){
+    return(
+    <div className="row">
+      <div className="col-lg-4">
+        <div className="dropdown">
+          <DropdownButton id="dropdown-basic-button" title="Dropdown button">
+            <Dropdown.Item href="#" onClick={()=>this.props.sortArray("active")}>Active</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.sortArray("critical")}>Critical</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.sortArray("recovered")}>Recovered</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.sortArray("total")}>Total</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.sortArray("deaths")}>Deaths</Dropdown.Item>
+          </DropdownButton>
+        </div>
+      </div>
+      <div className="col-lg-4"></div>
+      <div className="col-lg-4"></div>
+    </div>
+    )
+  }
+}
 
 class CountryCard extends React.Component {
   render(){
     var items = []
     const { getCode } = require('country-list');
     for (let i = 0; i < this.props.api.slice(-3).length; i++) {
-      const countryCode = getCode(this.props.api[i].country);
+      var countryCode = getCode(this.props.api[i].country);
+      if(countryCode === undefined){
+        countryCode = this.props.api[i].country.slice(0,2).toUpperCase()
+      }
       items.push(
       <div className="col-lg-4">
         <div className="countryCard">
@@ -47,6 +74,7 @@ class App extends React.Component {
     this.state = {
       api : []
     }
+    this.sortArray = this.sortArray.bind(this)
   }
   async componentDidMount(){
     try{
@@ -66,12 +94,68 @@ class App extends React.Component {
     catch(err){
       console.log(err)
     }
+    this.sortArray('active')
+  }
+
+  sortArray(param){
+    console.log(param)
+    var api = this.state.api
+    var sortable = [];
+    for (var key in api) {
+      sortable.push(api[key]);
+    }
+    switch (param) {
+      case 'active':
+        sortable.sort(function(a, b) {
+          return b.cases.active - a.cases.active;
+        });
+        console.log("active done")
+        break;
+      case 'critical':
+          sortable.sort(function(a, b) {
+            return b.cases.critical - a.cases.critical;
+          });
+          console.log("critical done")
+          break;
+      case 'recovered':
+          sortable.sort(function(a, b) {
+            console.log("recovered done")
+            return b.cases.recovered - a.cases.recovered;
+          });
+          break;
+      case 'total':
+          sortable.sort(function(a, b) {
+            return b.cases.total - a.cases.total;
+          });
+          break;
+      case 'deaths':
+          sortable.sort(function(a, b) {
+            return b.deaths.total - a.deaths.total;
+          });
+          break;
+    
+      default:
+        sortable.sort(function(a, b) {
+          return b.cases.active - a.cases.active;
+        });
+        break;
+    }
+
+    this.setState({
+      api : sortable
+    })
   }
   render(){
     return (
       <div className="App">
         <header className="App-header">
           <div className="container">
+          <div className="row">
+            <div className="col-lg-4"></div>
+            <div className="col-lg-4"><h1>COVID-19 STATUS</h1></div>
+            <div className="col-lg-4"></div>
+          </div>
+            <Settings sortArray={this.sortArray}/>
             <CountryCard api={this.state.api} />
           </div>
         </header>
