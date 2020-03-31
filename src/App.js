@@ -27,6 +27,7 @@ class Settings extends React.Component {
             <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(9)}>9</Dropdown.Item>
             <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(12)}>12</Dropdown.Item>
             <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(15)}>15</Dropdown.Item>
+            <Dropdown.Item href="#" onClick={()=>this.props.changeCountriesAmmount(30)}>30</Dropdown.Item>
           </DropdownButton>
         </div>
       </div>
@@ -37,7 +38,6 @@ class Settings extends React.Component {
 
 class CountryCard extends React.Component {
   render(){
-    console.log(this.props.sortBy)
     var items = []
     const { getCode } = require('country-list');
     const showCountriesAmmount = -this.props.showCountries
@@ -50,14 +50,14 @@ class CountryCard extends React.Component {
         countryCode = "GB"
       }
       items.push(
-      <div className="col-lg-4">
+      <div className="col-lg-4" key={i}>
         <div className="countryCard">
           <h3 className="countryCard__country">{this.props.api[i].country}</h3>
           <div>
-            <img src={"https://www.countryflags.io/"+ countryCode +"/flat/64.png"}></img>
+            <img src={"https://www.countryflags.io/"+ countryCode +"/flat/64.png"} alt={this.props.api[i].country}></img>
           </div>
           <span>{this.props.sortBy.charAt(0).toUpperCase() + this.props.sortBy.substring(1) + ":"}</span>
-          <h1 className="countryCard__title">{this.props.api[i].cases[this.props.sortBy]}</h1>
+          { this.props.sortBy!=="deaths" ? <h1 className="countryCard__title">{this.props.api[i].cases[this.props.sortBy]}</h1> : <h1 className="countryCard__title">{this.props.api[i].deaths.total}</h1>}
           <ul className="countryCard__infoList">
             { this.props.sortBy!=="active" ? <li className="countryCard__infoList__item">Active: {this.props.api[i].cases.active}</li> : ""}
             { this.props.sortBy!=="total" ? <li className="countryCard__infoList__item">Total infected: {this.props.api[i].cases.total}</li> : ""}
@@ -77,13 +77,15 @@ class CountryCard extends React.Component {
   }
 }
 
-class StatusList extends React.Component {
+class WorldStatus extends React.Component {
   render(){
-    var list 
+    if(this.props.api[0]){
+      console.log(this.props.api[0])
+    }
     return(
-      <ul>
-
-      </ul>
+      <div>
+        {/* {this.props.api[0].country} */}
+      </div>
     )
   }
 }
@@ -126,7 +128,7 @@ class App extends React.Component {
     catch(err){
       console.log(err)
     }
-    this.sortArray('active')
+    await this.sortArray('active')
   }
 
 
@@ -192,6 +194,7 @@ class App extends React.Component {
             <div className="col-lg-4"><h1>COVID-19 STATUS</h1></div>
             <div className="col-lg-4"></div>
           </div>
+            <WorldStatus api={this.state.api} />
             <Settings sortArray={this.sortArray} sortBy={this.state.sortBy} changeCountriesAmmount={this.changeCountriesAmmount} showCountries={this.state.showCountries} />
             <CountryCard api={this.state.api} showCountries={this.state.showCountries} sortBy={this.state.sortBy} />
           </div>
