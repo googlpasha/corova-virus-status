@@ -37,6 +37,7 @@ class Settings extends React.Component {
 
 class CountryCard extends React.Component {
   render(){
+    console.log(this.props.sortBy)
     var items = []
     const { getCode } = require('country-list');
     const showCountriesAmmount = -this.props.showCountries
@@ -55,13 +56,14 @@ class CountryCard extends React.Component {
           <div>
             <img src={"https://www.countryflags.io/"+ countryCode +"/flat/64.png"}></img>
           </div>
-          <span>Infected now:</span>
-          <h1 className="countryCard__title">{this.props.api[i].cases.active}</h1>
+          <span>{this.props.sortBy.charAt(0).toUpperCase() + this.props.sortBy.substring(1) + ":"}</span>
+          <h1 className="countryCard__title">{this.props.api[i].cases[this.props.sortBy]}</h1>
           <ul className="countryCard__infoList">
-            <li className="countryCard__infoList__item">Total infected: {this.props.api[i].cases.total}</li>
-            <li className="countryCard__infoList__item">Deaths: {this.props.api[i].deaths.total}</li>
-            <li className="countryCard__infoList__item">Recovered: {this.props.api[i].cases.recovered}</li>
-            <li className="countryCard__infoList__item">Critical: {this.props.api[i].cases.critical}</li>
+            { this.props.sortBy!=="active" ? <li className="countryCard__infoList__item">Active: {this.props.api[i].cases.active}</li> : ""}
+            { this.props.sortBy!=="total" ? <li className="countryCard__infoList__item">Total infected: {this.props.api[i].cases.total}</li> : ""}
+            { this.props.sortBy!=="deaths" ? <li className="countryCard__infoList__item">Deaths: {this.props.api[i].deaths.total}</li> : ""}
+            { this.props.sortBy!=="recovered" ? <li className="countryCard__infoList__item">Recovered: {this.props.api[i].cases.recovered}</li> : ""}
+            { this.props.sortBy!=="critical" ? <li className="countryCard__infoList__item">Critical: {this.props.api[i].cases.critical}</li> : ""}
           </ul>
         </div>
       </div>
@@ -71,6 +73,17 @@ class CountryCard extends React.Component {
       <div className="row">
         {items}
       </div>
+    )
+  }
+}
+
+class StatusList extends React.Component {
+  render(){
+    var list 
+    return(
+      <ul>
+
+      </ul>
     )
   }
 }
@@ -89,7 +102,7 @@ class App extends React.Component {
     super()
     this.state = {
       api : [],
-      sortBy: "Active",
+      sortBy: "active",
       showCountries: 3
     }
     this.sortArray = this.sortArray.bind(this)
@@ -118,7 +131,6 @@ class App extends React.Component {
 
 
   sortArray(param){
-    console.log(param)
     var api = this.state.api
     var sortable = [];
     for (var key in api) {
@@ -129,17 +141,14 @@ class App extends React.Component {
         sortable.sort(function(a, b) {
           return b.cases.active - a.cases.active;
         });
-        console.log("active done")
         break;
       case 'critical':
           sortable.sort(function(a, b) {
             return b.cases.critical - a.cases.critical;
           });
-          console.log("critical done")
           break;
       case 'recovered':
           sortable.sort(function(a, b) {
-            console.log("recovered done")
             return b.cases.recovered - a.cases.recovered;
           });
           break;
@@ -184,7 +193,7 @@ class App extends React.Component {
             <div className="col-lg-4"></div>
           </div>
             <Settings sortArray={this.sortArray} sortBy={this.state.sortBy} changeCountriesAmmount={this.changeCountriesAmmount} showCountries={this.state.showCountries} />
-            <CountryCard api={this.state.api} showCountries={this.state.showCountries} />
+            <CountryCard api={this.state.api} showCountries={this.state.showCountries} sortBy={this.state.sortBy} />
           </div>
         </header>
       </div>
