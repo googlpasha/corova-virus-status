@@ -77,15 +77,17 @@ class CountryCard extends React.Component {
   }
 }
 
-class WorldStatus extends React.Component {
+class Search extends React.Component{
+  constructor(){
+    super()
+    this.fieldChanged = this.fieldChanged.bind(this)
+  }
+  fieldChanged(value){
+    console.log(value)
+  }
   render(){
-    if(this.props.api[0]){
-      console.log(this.props.api[0])
-    }
     return(
-      <div>
-        {/* {this.props.api[0].country} */}
-      </div>
+      <input onChange={event => this.fieldChanged(event.target.value)}></input>
     )
   }
 }
@@ -194,7 +196,7 @@ class App extends React.Component {
             <div className="col-lg-4"><h1>COVID-19 STATUS</h1></div>
             <div className="col-lg-4"></div>
           </div>
-            <WorldStatus api={this.state.api} />
+            <Search api={this.state.api} />
             <Settings sortArray={this.sortArray} sortBy={this.state.sortBy} changeCountriesAmmount={this.changeCountriesAmmount} showCountries={this.state.showCountries} />
             <CountryCard api={this.state.api} showCountries={this.state.showCountries} sortBy={this.state.sortBy} />
           </div>
